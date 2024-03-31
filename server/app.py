@@ -16,7 +16,8 @@ db.init_app(app)
 
 @app.route('/messages')
 def messages():
-    return ''
+    messages = [m.to_dict() for m in Message.query.all()]
+    return make_response(messages, 200)
 
 @app.route('/messages/<int:id>')
 def messages_by_id(id):
