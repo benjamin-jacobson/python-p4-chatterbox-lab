@@ -59,7 +59,12 @@ def messages_by_id(id):
         return make_response(message_dict,200)
 
     elif request.method == "DELETE":
-        
+        message = Message.query.filter_by(id=id).first()
+        db.session.delete(message)
+        db.session.commit()
+        return make_response({'message':'record successfully deleted'},200)
+
+
 
 
 
