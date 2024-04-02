@@ -24,22 +24,42 @@ def messages():
         return make_response(messages, 200)
 
     elif request.method == 'POST':
-        new_message = Message(
-            body = 'test' #request.form.get("body"),
-            username = 'testuser' #request.form.get("username"),
-            created_at = datetime.datetime.now()
-             )
+        # new_message = Message(
+        #     body = 'test' #request.form.get("body"),
+        #     username = 'testuser' #request.form.get("username"),
+        #     created_at = datetime.datetime.now()
+        #      )
 
-        db.session.add(new_message)
+        data = request.get_json()
+        message = Message(
+            body=data['body'],
+            username=data['username']
+        )
+
+        db.session.add(message)
         db.session.commit()
-        return make_response(new_message.to_dict(),201)
+        return make_response(message.to_dict(),201)
 
-@app.route('/messages/<int:id>', methods = ['GET','POST'])
+@app.route('/messages/<int:id>', methods = ['GET','PATCH','DELETE'])
 def messages_by_id(id):
 
     if request.method == 'GET':
         message = Message.query.filter_by(id=id).first()
         return make_response(message.to_dict(),200)
+
+    elif request.method == 'PATCH':
+        message = Message.query.filter_by(id=id).first()
+        data = request.get_json()
+        for attr in data:
+            setattr(message, attr, data.get(attr))
+        db.session.add(message)
+        db.session.commit()
+
+        message_dict = message.to_dict()
+        return make_response(message_dict,200)
+
+    elif request.method == "DELETE":
+        
 
 
 
